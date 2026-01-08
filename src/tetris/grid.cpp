@@ -1,4 +1,5 @@
 #include "include/tetris/grid.h"
+#include "include/tetris/constants.h"
 
 #include <algorithm>
 
@@ -55,14 +56,14 @@ void grid_t::rotate_piece() {
     a = piece.get_position()[0] + (t / 4) + 1;
     b = piece.get_position()[1] + (t % 4);
 
-    if (((piece.get_shape_list()[piece.get_n()][(piece.get_m() + 1) % 4] >> t) & 1)
+    if (((tetris::SHAPE_LIST[piece.get_n()][(piece.get_m() + 1) % 4] >> t) & 1)
         && (a > 23 || b < 0 || b > 9 || inRange(matrix[a][b], 2, 9)))
       possible = false;
   }
 
   if (possible) {
     piece.set_m((piece.get_m() + 1) % 4);
-    piece.set_shape(piece.get_shape_list()[piece.get_n()][piece.get_m()]);
+    piece.set_shape(tetris::SHAPE_LIST[piece.get_n()][piece.get_m()]);
   }
 }
 

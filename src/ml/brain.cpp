@@ -1,6 +1,7 @@
 #include "include/ml/brain.h"
 
 #include "include/ml/utils.h"
+#include "include/tetris/constants.h"
 
 #include <algorithm>
 #include <cmath>
@@ -22,7 +23,7 @@ brain_t::brain_t(neural_net_t params) {
 std::string brain_t::best_move(tetris::grid_t grid) noexcept {
   std::string bestMove, bestRotation;
   float maxScore = -pow(10.0, 5);
-  int nRotations = grid.get_piece().get_shape_rotations()[grid.get_piece().get_n()];
+  int nRotations = tetris::SHAPE_ROTATIONS[grid.get_piece().get_n()];
   tetris::grid_t startinggrid_t = grid;
   std::vector<std::string> possibleMoves = {"llll", "lll", "ll", "l", "rrrrr", "rrrr", "rrr", "rr", "r", ""};
 
@@ -52,7 +53,7 @@ std::string brain_t::best_move(tetris::grid_t grid) noexcept {
 
       grid.get_piece().new_shape();
 
-      int nRotationsNext = grid.get_piece().get_shape_rotations()[grid.get_piece().get_n()];
+      int nRotationsNext = tetris::SHAPE_ROTATIONS[grid.get_piece().get_n()];
       tetris::grid_t nextStartinggrid_t = grid;
 
       for (int rNext = 0; rNext < nRotationsNext; rNext++) {

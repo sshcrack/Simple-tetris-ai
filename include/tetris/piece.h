@@ -77,22 +77,12 @@ public:
     fixed = value;
   }
 
-  [[nodiscard]] const std::vector<std::vector<uint16_t>>& get_shape_list() const noexcept {
-    return shapeList;
-  }
-
-  [[nodiscard]] const std::vector<int>& get_shape_rotations() const noexcept {
-    return shapeRotations;
-  }
-
 private:
   std::vector<int> pieceBag;
   int n, m, next;
   uint16_t shape;
   int position[2];
   bool fixed;
-  std::vector<std::vector<uint16_t>> shapeList;
-  std::vector<int> shapeRotations;
 };
 
 } // namespace tetris
