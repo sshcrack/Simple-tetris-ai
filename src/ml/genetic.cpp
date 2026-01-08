@@ -2,8 +2,15 @@
 
 #include <iostream>
 #include <string>
+#include <thread>
+#include <vector>
+#include <mutex>
+#include <future>
+#include <algorithm>
 
 #define N_GAMES 3
+
+static std::mutex cout_mutex;
 
 namespace ml {
 
@@ -23,18 +30,43 @@ genetic_t::genetic_t() {
 }
 
 void genetic_t::fit() {
+  const unsigned num_threads = std::thread::hardware_concurrency();
+  std::cout << "Using " << num_threads << " threads for training" << std::endl;
+
   while (true) {
-    int agent = 0;
     float best_fitnes = population_.get_agents()[0].get_score();
 
+    std::vector<std::future<std::pair<size_t, brain_t>>> futures;
+
     for (size_t b = 0; b < population_.agents_count(); b++) {
-      std::cout << "gen " << gen_ << "   agent " << ++agent << "/" << population_.agents_count() << '\n';
-      population_.get_agents()[b] = run_games(population_.get_agents()[b]);
-      std::cout << "current -> " << population_.get_agents()[b].get_score() << "  best -> " << best_fitnes << '\n';
+      futures.push_back(std::async(std::launch::async, [this, b, best_fitnes]() {
+        {
+          std::lock_guard<std::mutex> lock(cout_mutex);
+          std::cout << "gen " << gen_ << "   agent " << (b + 1) << "/" << population_.agents_count() << '\n';
+        }
+        brain_t result = run_games(population_.get_agents()[b]);
+        {
+          std::lock_guard<std::mutex> lock(cout_mutex);
+          std::cout << "current -> " << result.get_score() << "  best -> " << best_fitnes << '\n';
+        }
+        return std::make_pair(b, result);
+      }));
+
+      if (futures.size() >= num_threads || b == population_.agents_count() - 1) {
+        for (auto& f : futures) {
+          auto [agent_idx, result] = f.get();
+          population_.get_agents()[agent_idx] = result;
+        }
+        futures.clear();
+      }
     }
-    if (population_.get_agents().back().get_score() > best_recorded_fitnes_) {
-      best_recorded_fitnes_ = population_.get_agents().back().get_score();
-      population_.get_agents().back().save("data/bestParams.txt");
+
+    auto best_agent = std::max_element(population_.get_agents().begin(), population_.get_agents().end(),
+      [](const brain_t& b1, const brain_t& b2) { return b1.get_score() < b2.get_score(); });
+
+    if (best_agent->get_score() > best_recorded_fitnes_) {
+      best_recorded_fitnes_ = best_agent->get_score();
+      best_agent->save("data/bestParams.txt");
     }
 
     std::cout << '\n' << '\n' << "GENERATION " << gen_++ << '\n' << '\n';
@@ -76,7 +108,10 @@ brain_t genetic_t::run_games(brain_t brain_param) {
       grid.get_piece().new_shape();
       grid.get_piece().new_next();
     }
-    std::cout << "game " << g + 1 << " ->  score: " << grid.get_score() << "  lines: " << grid.get_cleared_lines() << '\n';
+    {
+      std::lock_guard<std::mutex> lock(cout_mutex);
+      std::cout << "game " << g + 1 << " ->  score: " << grid.get_score() << "  lines: " << grid.get_cleared_lines() << '\n';
+    }
     fitness += grid.get_score();
   }
 
