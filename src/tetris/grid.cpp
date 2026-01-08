@@ -55,7 +55,7 @@ void grid_t::rotate_piece() {
     a = piece.get_position()[0] + (t / 4) + 1;
     b = piece.get_position()[1] + (t % 4);
 
-    if (piece.get_shape_list()[piece.get_n()][(piece.get_m() + 1) % 4][t] == 'o'
+    if (((piece.get_shape_list()[piece.get_n()][(piece.get_m() + 1) % 4] >> t) & 1)
         && (a > 23 || b < 0 || b > 9 || inRange(matrix[a][b], 2, 9)))
       possible = false;
   }
@@ -74,7 +74,7 @@ void grid_t::move_piece(int dir, int ind) {
     a = piece.get_position()[0] + (t / 4);
     b = piece.get_position()[1] + (t % 4);
 
-    if (piece.get_shape()[t] == 'o') {
+    if ((piece.get_shape() >> t) & 1) {
       if (b == ind)
         limit = true;
       else if (0 <= b + dir && b + dir <= 9 && 0 <= a && a <= 23) {
@@ -109,7 +109,7 @@ void grid_t::fix_piece() {
     a = piece.get_position()[0] + (k / 4);
     b = piece.get_position()[1] + (k % 4);
 
-    if (piece.get_shape()[k] == 'o') {
+    if ((piece.get_shape() >> k) & 1) {
       if (a < 4)
         gameOver = true;
       else if (a < 24)
@@ -135,7 +135,7 @@ void grid_t::update() {
     a = piece.get_position()[0] + (i / 4);
     b = piece.get_position()[1] + (i % 4);
 
-    if (piece.get_shape()[i] == 'o' && 0 <= a && a < 24 && 0 <= b && b < 10) {
+    if (((piece.get_shape() >> i) & 1) && 0 <= a && a < 24 && 0 <= b && b < 10) {
       if (a == 23 || inRange(matrix[a + 1][b], 2, 9)) {
         fixed = true;
         fix_piece();

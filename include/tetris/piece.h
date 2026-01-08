@@ -1,7 +1,7 @@
 #pragma once
 
+#include <cstdint>
 #include <random>
-#include <string>
 #include <vector>
 
 namespace tetris {
@@ -44,11 +44,11 @@ public:
     next = value;
   }
 
-  [[nodiscard]] const std::string& get_shape() const noexcept {
+  [[nodiscard]] uint16_t get_shape() const noexcept {
     return shape;
   }
 
-  void set_shape(const std::string& value) noexcept {
+  void set_shape(uint16_t value) noexcept {
     shape = value;
   }
 
@@ -77,7 +77,7 @@ public:
     fixed = value;
   }
 
-  [[nodiscard]] const std::vector<std::vector<std::string>>& get_shape_list() const noexcept {
+  [[nodiscard]] const std::vector<std::vector<uint16_t>>& get_shape_list() const noexcept {
     return shapeList;
   }
 
@@ -88,10 +88,10 @@ public:
 private:
   std::vector<int> pieceBag;
   int n, m, next;
-  std::string shape;
+  uint16_t shape;
   int position[2];
   bool fixed;
-  std::vector<std::vector<std::string>> shapeList;
+  std::vector<std::vector<uint16_t>> shapeList;
   std::vector<int> shapeRotations;
 };
 
