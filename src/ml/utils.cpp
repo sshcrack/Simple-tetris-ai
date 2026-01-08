@@ -14,7 +14,7 @@ std::uniform_int_distribution<int> d2(0, 10000000);
 
 float get_random_param() {
   // returns random float between -1.0000000 and 1.0000000
-  return (float)d2(rd2) / pow(10, 7) * (2 * (d2(rd2) % 2) - 1);
+  return static_cast<float>(d2(rd2)) / pow(10, 7) * (2 * (d2(rd2) % 2) - 1);
 }
 
 } // namespace
@@ -26,7 +26,8 @@ float relu(float node) noexcept {
 }
 
 float forward(const neural_net_t& net, const std::vector<int>& inputs) noexcept {
-  float tmp, out = 0.0;
+  float tmp = 0.0;
+  float out = 0.0;
 
   for (int i = 0; i < 3; i++) {
     tmp = 0.0;
@@ -42,20 +43,19 @@ float forward(const neural_net_t& net, const std::vector<int>& inputs) noexcept 
 }
 
 void save(const neural_net_t& net, const std::string& filename, int score) noexcept {
-  int i, j;
   std::ofstream file(filename);
   file << "";
   file.close();
   std::ofstream fileAdd;
   fileAdd.open(filename, std::ios_base::app);
 
-  for (i = 0; i < 3; i++) {
-    for (j = 0; j < 4; j++) {
+  for (int i = 0; i < 3; i++) {
+    for (int j = 0; j < 4; j++) {
       fileAdd << net.layer1[i][j] << '\n';
     }
     fileAdd << net.biases1[i] << '\n';
   }
-  for (i = 0; i < 3; i++) {
+  for (int i = 0; i < 3; i++) {
     fileAdd << net.layer2[i] << '\n';
   }
   fileAdd << net.bias2 << '\n';
@@ -66,27 +66,26 @@ void save(const neural_net_t& net, const std::string& filename, int score) noexc
 
 neural_net_t load(const std::string& filename) noexcept {
   neural_net_t net;
-  int i, j;
   char* line = nullptr;
   size_t len = 0;
   FILE* file = fopen(filename.c_str(), "r");
 
-  for (i = 0; i < 3; i++) {
+  for (int i = 0; i < 3; i++) {
     std::vector<float> tmp;
-    for (j = 0; j < 4; j++) {
+    for (int j = 0; j < 4; j++) {
       getline(&line, &len, file);
-      tmp.push_back((float)strtod(line, NULL));
+      tmp.push_back(static_cast<float>(strtod(line, nullptr)));
     }
     net.layer1.push_back(tmp);
     getline(&line, &len, file);
-    net.biases1.push_back((float)strtod(line, NULL));
+    net.biases1.push_back(static_cast<float>(strtod(line, nullptr)));
   }
-  for (i = 0; i < 3; i++) {
+  for (int i = 0; i < 3; i++) {
     getline(&line, &len, file);
-    net.layer2.push_back((float)strtod(line, NULL));
+    net.layer2.push_back(static_cast<float>(strtod(line, nullptr)));
   }
   getline(&line, &len, file);
-  net.bias2 = (float)strtod(line, NULL);
+  net.bias2 = static_cast<float>(strtod(line, nullptr));
 
   fclose(file);
   free(line);

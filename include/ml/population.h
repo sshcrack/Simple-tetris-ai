@@ -12,7 +12,7 @@ public:
   population_t();
 
   void generate_new();
-  std::vector<float> normalize(std::vector<float> params);
+  std::vector<float> normalize(std::vector<float> params_param);
 
   size_t agents_count() const noexcept {
     return agents_.size();

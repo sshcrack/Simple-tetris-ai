@@ -24,8 +24,8 @@ population_t::population_t() {
 
 void population_t::generate_new() {
   std::vector<brain_t> new_offsprings;
-  int n_worst_agents = NUM_AGENTS * 0.3;
-  int n_selection = NUM_AGENTS * 0.1;
+  const int n_worst_agents = static_cast<int>(NUM_AGENTS * 0.3);
+  const int n_selection = static_cast<int>(NUM_AGENTS * 0.1);
 
   for (int i = 0; i < n_worst_agents; i++) {
     std::vector<brain_t> random_selection;
@@ -38,24 +38,26 @@ void population_t::generate_new() {
       return b1.get_score() < b2.get_score();
     });
 
-    brain_t new_brain_t = random_selection[n_selection - 1].crossover(random_selection[n_selection - 2]);
-    new_offsprings.push_back(new_brain_t);
+    brain_t new_brain = random_selection[n_selection - 1].crossover(random_selection[n_selection - 2]);
+    new_offsprings.push_back(new_brain);
   }
   sort(agents_.begin(), agents_.end(), [](brain_t& b1, brain_t& b2) -> bool {
     return b1.get_score() < b2.get_score();
   });
 
-  int totalFitness = 0;
-  for (int a = 0; a < NUM_AGENTS; a++)
-    totalFitness += agents_[a].get_score();
+  int total_fitness = 0;
+  for (int a = 0; a < NUM_AGENTS; a++) {
+    total_fitness += agents_[a].get_score();
+  }
 
   std::cout << "#############################################################" << '\n' << '\n';
-  std::cout << "average fitness: " << (float)totalFitness / NUM_AGENTS << '\n';
+  std::cout << "average fitness: " << static_cast<float>(total_fitness) / NUM_AGENTS << '\n';
   std::cout << "highest fitness: " << agents_.back().get_score() << '\n';
   std::cout << '\n' << "#############################################################" << '\n' << '\n' << '\n';
 
-  for (int i = 0; i < n_worst_agents; i++)
+  for (int i = 0; i < n_worst_agents; i++) {
     agents_[i] = new_offsprings[i];
+  }
 }
 
 } // namespace ml

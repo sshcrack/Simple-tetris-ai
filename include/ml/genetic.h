@@ -8,7 +8,7 @@ class genetic_t {
 public:
   genetic_t();
   void fit();
-  brain_t run_games(brain_t brain);
+  brain_t run_games(brain_t brain_param);
 
 private:
   int gen_;

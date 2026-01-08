@@ -8,8 +8,9 @@ std::uniform_int_distribution<int> d1(0, 7);
 
 std::vector<int> removeElement(std::vector<int> v, int elem) {
   int it = 0;
-  while (v[it] != elem)
+  while (v[it] != elem) {
     it++;
+  }
   std::swap(v[it], v.back());
   v.pop_back();
   return v;

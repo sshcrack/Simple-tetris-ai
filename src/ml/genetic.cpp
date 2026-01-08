@@ -14,19 +14,20 @@ genetic_t::genetic_t() {
   size_t len = 0;
   FILE* file1 = fopen("data/bestParams.txt", "r");
   while (getline(&line, &len, file1) != -1) {
-    if (l++ == 4 * 3 + 3 + 3 + 1)
-      best_recorded_fitnes_ = atoi(line);
+    if (l++ == 4 * 3 + 3 + 3 + 1) {
+      best_recorded_fitnes_ = static_cast<int>(strtol(line, nullptr, 10));
+    }
   }
   fclose(file1);
   free(line);
 }
 
 void genetic_t::fit() {
-  while (1) {
+  while (true) {
     int agent = 0;
     float best_fitnes = population_.get_agents()[0].get_score();
 
-    for (int b = 0; b < population_.agents_count(); b++) {
+    for (size_t b = 0; b < population_.agents_count(); b++) {
       std::cout << "gen " << gen_ << "   agent " << ++agent << "/" << population_.agents_count() << '\n';
       population_.get_agents()[b] = run_games(population_.get_agents()[b]);
       std::cout << "current -> " << population_.get_agents()[b].get_score() << "  best -> " << best_fitnes << '\n';
@@ -41,26 +42,29 @@ void genetic_t::fit() {
   }
 }
 
-brain_t genetic_t::run_games(brain_t brain) {
+brain_t genetic_t::run_games(brain_t brain_param) {
   int fitness = 0;
 
   for (int g = 0; g < N_GAMES; g++) {
     tetris::grid_t grid;
     int pieces = 0;
     while (!grid.is_game_over() && pieces++ < 50000) {
-      std::string best_move = brain.best_move(grid);
-      int best_rotation = (int)best_move.back() - 48;
+      std::string best_move = brain_param.best_move(grid);
+      int best_rotation = static_cast<int>(best_move.back()) - 48;
       best_move.pop_back();
 
-      for (int i = 0; i < best_rotation; i++)
+      for (int i = 0; i < best_rotation; i++) {
         grid.rotate_piece();
+      }
 
       if (best_move[0] == 'r') {
-        for (int m = 0; m < best_move.size(); m++)
+        for (size_t m = 0; m < best_move.size(); m++) {
           grid.move_piece(1, 9);
+        }
       } else {
-        for (int m = 0; m < best_move.size(); m++)
+        for (size_t m = 0; m < best_move.size(); m++) {
           grid.move_piece(-1, 0);
+        }
       }
 
       while (!grid.get_piece().is_fixed()) {
@@ -76,8 +80,8 @@ brain_t genetic_t::run_games(brain_t brain) {
     fitness += grid.get_score();
   }
 
-  brain.set_score(fitness / N_GAMES);
-  return brain;
+  brain_param.set_score(fitness / N_GAMES);
+  return brain_param;
 }
 
 } // namespace ml

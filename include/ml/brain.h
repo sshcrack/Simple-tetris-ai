@@ -12,10 +12,10 @@ namespace ml {
 class brain_t {
 public:
   brain_t();
-  brain_t(neural_net_t params);
+  brain_t(neural_net_t net);
 
-  brain_t crossover(brain_t partner) noexcept;
-  std::string best_move(tetris::grid_t grid) noexcept;
+  brain_t crossover(brain_t partner_param) noexcept;
+  std::string best_move(const tetris::grid_t& grid) noexcept;
 
   void set_score(int score) noexcept {
     this->score = score;
@@ -30,11 +30,11 @@ public:
   }
 
 private:
-  std::vector<int> get_column_heights(std::vector<std::vector<int>> grid) noexcept;
-  int get_holes(std::vector<std::vector<int>> grid) noexcept;
-  int get_bumpiness(std::vector<std::vector<int>> grid) noexcept;
-  int get_completed_lines(std::vector<std::vector<int>> grid) noexcept;
-  int get_aggregate_height(std::vector<std::vector<int>> grid) noexcept;
+  std::vector<int> get_column_heights(const std::vector<std::vector<int>>& grid) noexcept;
+  int get_holes(const std::vector<std::vector<int>>& grid) noexcept;
+  int get_bumpiness(const std::vector<std::vector<int>>& grid) noexcept;
+  int get_completed_lines(const std::vector<std::vector<int>>& grid) noexcept;
+  int get_aggregate_height(const std::vector<std::vector<int>>& grid) noexcept;
 
   int score;
   neural_net_t params;
