@@ -33,7 +33,7 @@ int main() {
   for (int i = 0; i < bestRotation; i++)
     grid.rotate_piece();
 
-  while (!grid.gameOver) {
+  while (!grid.is_game_over()) {
 
     if (bestMove.size() > 0) {
       if (bestMove[0] == 'r') {
@@ -49,9 +49,9 @@ int main() {
     grid.clear_lines();
     grid.update();
 
-    if (grid.piece.fixed) {
-      grid.piece.new_shape();
-      grid.piece.new_next();
+    if (grid.get_piece().is_fixed()) {
+      grid.get_piece().new_shape();
+      grid.get_piece().new_next();
       bestMove = brain.best_move(grid);
       bestRotation = (int)bestMove.back() - 48;
       bestMove.pop_back();
@@ -62,7 +62,7 @@ int main() {
 
     if (newRecord)
       std::cout << "NEW RECORD" << '\n';
-    std::cout << "cleared lines -> " << grid.clearedLines << '\n';
+    std::cout << "cleared lines -> " << grid.get_cleared_lines() << '\n';
     std::cout << "record -> " << record << '\n' << '\n';
     if (bestM[0] == 'r')
       std::cout << "best move -> " << bestM.size() << " time(s) right and " << bestRotation << " rotation(s)" << '\n';
@@ -73,21 +73,21 @@ int main() {
     std::cout << '\n';
     for (int j = 4; j < 24; j++) {
       for (int i = 0; i < 10; i++) {
-        if (grid.matrix[j][i] == 0) {
+        if (grid.get_matrix()[j][i] == 0) {
           std::cout << "· ";
         } else {
-          std::cout << grid.matrix[j][i] << " ";
+          std::cout << grid.get_matrix()[j][i] << " ";
         }
       }
       std::cout << '\n';
     }
     std::cout << '\n' << '\n';
 
-    if (grid.clearedLines > record) {
+    if (grid.get_cleared_lines() > record) {
       newRecord = true;
       std::ofstream file("data/record.txt");
       if (file.is_open()) {
-        record = grid.clearedLines;
+        record = grid.get_cleared_lines();
         file << record;
         file.close();
       }

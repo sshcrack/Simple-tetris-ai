@@ -22,7 +22,7 @@ brain_t::brain_t(neural_net_t params) {
 std::string brain_t::best_move(tetris::grid_t grid) noexcept {
   std::string bestMove, bestRotation;
   float maxScore = -pow(10.0, 5);
-  int nRotations = grid.piece.shapeRotations[grid.piece.n];
+  int nRotations = grid.get_piece().get_shape_rotations()[grid.get_piece().get_n()];
   tetris::grid_t startinggrid_t = grid;
   std::vector<std::string> possibleMoves = {"llll", "lll", "ll", "l", "rrrrr", "rrrr", "rrr", "rr", "r", ""};
 
@@ -43,16 +43,16 @@ std::string brain_t::best_move(tetris::grid_t grid) noexcept {
       }
 
       grid.gravity(3);
-      std::vector<int> heuristics = {getAggregateHeight(grid.matrix),
-                                     getCompletedLines(grid.matrix),
-                                     getHoles(grid.matrix),
-                                     getBumpiness(grid.matrix)};
+      std::vector<int> heuristics = {getAggregateHeight(grid.get_matrix()),
+                                     getCompletedLines(grid.get_matrix()),
+                                     getHoles(grid.get_matrix()),
+                                     getBumpiness(grid.get_matrix())};
 
       float score = forward(params, heuristics);
 
-      grid.piece.new_shape();
+      grid.get_piece().new_shape();
 
-      int nRotationsNext = grid.piece.shapeRotations[grid.piece.n];
+      int nRotationsNext = grid.get_piece().get_shape_rotations()[grid.get_piece().get_n()];
       tetris::grid_t nextStartinggrid_t = grid;
 
       for (int rNext = 0; rNext < nRotationsNext; rNext++) {
@@ -70,10 +70,10 @@ std::string brain_t::best_move(tetris::grid_t grid) noexcept {
               grid.move_piece(1, 9);
           }
 
-          std::vector<int> heuristics = {getAggregateHeight(grid.matrix),
-                                         getCompletedLines(grid.matrix),
-                                         getHoles(grid.matrix),
-                                         getBumpiness(grid.matrix)};
+          std::vector<int> heuristics = {getAggregateHeight(grid.get_matrix()),
+                                         getCompletedLines(grid.get_matrix()),
+                                         getHoles(grid.get_matrix()),
+                                         getBumpiness(grid.get_matrix())};
 
           float score2 = score + forward(params, heuristics);
 

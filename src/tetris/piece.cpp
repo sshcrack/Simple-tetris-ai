@@ -49,6 +49,79 @@ piece_t::piece_t() {
   shape = shapeList[n][m];
 }
 
+const std::vector<int>& piece_t::get_piece_bag() const noexcept {
+  return pieceBag;
+}
+
+void piece_t::set_piece_bag(const std::vector<int>& bag) noexcept {
+  pieceBag = bag;
+}
+
+int piece_t::get_n() const noexcept {
+  return n;
+}
+
+void piece_t::set_n(int value) noexcept {
+  n = value;
+}
+
+int piece_t::get_m() const noexcept {
+  return m;
+}
+
+void piece_t::set_m(int value) noexcept {
+  m = value;
+}
+
+int piece_t::get_next() const noexcept {
+  return next;
+}
+
+void piece_t::set_next(int value) noexcept {
+  next = value;
+}
+
+const std::string& piece_t::get_shape() const noexcept {
+  return shape;
+}
+
+void piece_t::set_shape(const std::string& value) noexcept {
+  shape = value;
+}
+
+const int* piece_t::get_position() const noexcept {
+  return position;
+}
+
+void piece_t::set_position(int row, int col) noexcept {
+  position[0] = row;
+  position[1] = col;
+}
+
+void piece_t::set_position_row(int row) noexcept {
+  position[0] = row;
+}
+
+void piece_t::set_position_col(int col) noexcept {
+  position[1] = col;
+}
+
+bool piece_t::is_fixed() const noexcept {
+  return fixed;
+}
+
+void piece_t::set_fixed(bool value) noexcept {
+  fixed = value;
+}
+
+const std::vector<std::vector<std::string>>& piece_t::get_shape_list() const noexcept {
+  return shapeList;
+}
+
+const std::vector<int>& piece_t::get_shape_rotations() const noexcept {
+  return shapeRotations;
+}
+
 void piece_t::new_shape() {
   n = next;
   m = 0;

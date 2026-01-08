@@ -47,7 +47,7 @@ brain_t genetic_t::run_games(brain_t brain) {
   for (int g = 0; g < N_GAMES; g++) {
     tetris::grid_t grid;
     int pieces = 0;
-    while (!grid.gameOver && pieces++ < 50000) {
+    while (!grid.is_game_over() && pieces++ < 50000) {
       std::string bestMove = brain.best_move(grid);
       int bestRotation = (int)bestMove.back() - 48;
       bestMove.pop_back();
@@ -63,17 +63,17 @@ brain_t genetic_t::run_games(brain_t brain) {
           grid.move_piece(-1, 0);
       }
 
-      while (!grid.piece.fixed) {
+      while (!grid.get_piece().is_fixed()) {
         grid.gravity(1);
         grid.clear_lines();
         grid.update();
       }
 
-      grid.piece.new_shape();
-      grid.piece.new_next();
+      grid.get_piece().new_shape();
+      grid.get_piece().new_next();
     }
-    std::cout << "game " << g + 1 << " ->  score: " << grid.score << "  lines: " << grid.clearedLines << '\n';
-    fitness += grid.score;
+    std::cout << "game " << g + 1 << " ->  score: " << grid.get_score() << "  lines: " << grid.get_cleared_lines() << '\n';
+    fitness += grid.get_score();
   }
 
   brain.set_score(fitness / N_GAMES);

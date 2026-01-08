@@ -24,6 +24,46 @@ grid_t::grid_t() {
     matrix.push_back({0, 0, 0, 0, 0, 0, 0, 0, 0, 0});
 }
 
+piece_t& grid_t::get_piece() noexcept {
+  return piece;
+}
+
+const piece_t& grid_t::get_piece() const noexcept {
+  return piece;
+}
+
+bool grid_t::is_game_over() const noexcept {
+  return gameOver;
+}
+
+void grid_t::set_game_over(bool value) noexcept {
+  gameOver = value;
+}
+
+float grid_t::get_cleared_lines() const noexcept {
+  return clearedLines;
+}
+
+void grid_t::set_cleared_lines(float value) noexcept {
+  clearedLines = value;
+}
+
+const std::vector<std::vector<int>>& grid_t::get_matrix() const noexcept {
+  return matrix;
+}
+
+std::vector<std::vector<int>>& grid_t::get_matrix() noexcept {
+  return matrix;
+}
+
+int grid_t::get_score() const noexcept {
+  return score;
+}
+
+void grid_t::set_score(int value) noexcept {
+  score = value;
+}
+
 void grid_t::clear_lines() {
   int nLines = 0;
   for (int j = 4; j < 24; j++) {
@@ -32,7 +72,7 @@ void grid_t::clear_lines() {
         matrix[j - k + 1] = matrix[j - k];
       }
       matrix[0] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-      piece.position[0]++;
+      piece.set_position_row(piece.get_position()[0] + 1);
       clearedLines++;
       nLines++;
     }
@@ -52,17 +92,17 @@ void grid_t::rotate_piece() {
   bool possible = true;
 
   while (t++ < 16 && possible) {
-    a = piece.position[0] + (t / 4) + 1;
-    b = piece.position[1] + (t % 4);
+    a = piece.get_position()[0] + (t / 4) + 1;
+    b = piece.get_position()[1] + (t % 4);
 
-    if (piece.shapeList[piece.n][(piece.m + 1) % 4][t] == 'o'
+    if (piece.get_shape_list()[piece.get_n()][(piece.get_m() + 1) % 4][t] == 'o'
         && (a > 23 || b < 0 || b > 9 || inRange(matrix[a][b], 2, 9)))
       possible = false;
   }
 
   if (possible) {
-    piece.m = (piece.m + 1) % 4;
-    piece.shape = piece.shapeList[piece.n][piece.m];
+    piece.set_m((piece.get_m() + 1) % 4);
+    piece.set_shape(piece.get_shape_list()[piece.get_n()][piece.get_m()]);
   }
 }
 
@@ -71,10 +111,10 @@ void grid_t::move_piece(int dir, int ind) {
   bool limit = false;
 
   while (t++ < 16 && !limit) {
-    a = piece.position[0] + (t / 4);
-    b = piece.position[1] + (t % 4);
+    a = piece.get_position()[0] + (t / 4);
+    b = piece.get_position()[1] + (t % 4);
 
-    if (piece.shape[t] == 'o') {
+    if (piece.get_shape()[t] == 'o') {
       if (b == ind)
         limit = true;
       else if (0 <= b + dir && b + dir <= 9 && 0 <= a && a <= 23) {
@@ -84,18 +124,18 @@ void grid_t::move_piece(int dir, int ind) {
     }
   }
   if (!limit)
-    piece.position[1] += dir;
+    piece.set_position_col(piece.get_position()[1] + dir);
 }
 
 void grid_t::gravity(int val) {
   if (val == 1)
-    piece.position[0]++;
+    piece.set_position_row(piece.get_position()[0] + 1);
   else if (val == 2) {
     gravity(1);
     update();
     gravity(1);
   } else {
-    while (!piece.fixed) {
+    while (!piece.is_fixed()) {
       gravity(1);
       update();
     }
@@ -104,16 +144,16 @@ void grid_t::gravity(int val) {
 
 void grid_t::fix_piece() {
   int a, b;
-  piece.fixed = true;
+  piece.set_fixed(true);
   for (int k = 0; k < 16; k++) {
-    a = piece.position[0] + (k / 4);
-    b = piece.position[1] + (k % 4);
+    a = piece.get_position()[0] + (k / 4);
+    b = piece.get_position()[1] + (k % 4);
 
-    if (piece.shape[k] == 'o') {
+    if (piece.get_shape()[k] == 'o') {
       if (a < 4)
         gameOver = true;
       else if (a < 24)
-        matrix[a][b] = piece.n + 2;
+        matrix[a][b] = piece.get_n() + 2;
     }
   }
   if (a < 4)
@@ -132,10 +172,10 @@ void grid_t::update() {
   }
 
   while (i++ < 16 && !fixed) {
-    a = piece.position[0] + (i / 4);
-    b = piece.position[1] + (i % 4);
+    a = piece.get_position()[0] + (i / 4);
+    b = piece.get_position()[1] + (i % 4);
 
-    if (piece.shape[i] == 'o' && 0 <= a && a < 24 && 0 <= b && b < 10) {
+    if (piece.get_shape()[i] == 'o' && 0 <= a && a < 24 && 0 <= b && b < 10) {
       if (a == 23 || inRange(matrix[a + 1][b], 2, 9)) {
         fixed = true;
         fix_piece();
