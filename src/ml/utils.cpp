@@ -12,7 +12,7 @@ namespace {
 std::random_device rd2;
 std::uniform_int_distribution<int> d2(0, 10000000);
 
-float getRandomParam() {
+float get_random_param() {
   // returns random float between -1.0000000 and 1.0000000
   return (float)d2(rd2) / pow(10, 7) * (2 * (d2(rd2) % 2) - 1);
 }
@@ -100,16 +100,16 @@ neural_net_t generate_net() noexcept {
   for (int i = 0; i < 3; i++) {
     std::vector<float> tmp;
     for (int j = 0; j < 4; j++) {
-      tmp.push_back(getRandomParam());
+      tmp.push_back(get_random_param());
     }
     net.layer1.push_back(tmp);
-    net.biases1.push_back(getRandomParam());
+    net.biases1.push_back(get_random_param());
   }
 
   for (int i = 0; i < 3; i++) {
-    net.layer2.push_back(getRandomParam());
+    net.layer2.push_back(get_random_param());
   }
-  net.bias2 = getRandomParam();
+  net.bias2 = get_random_param();
 
   return net;
 }

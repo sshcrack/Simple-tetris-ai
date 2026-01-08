@@ -23,23 +23,23 @@ population_t::population_t() {
 }
 
 void population_t::generate_new() {
-  std::vector<brain_t> newOffsprings;
-  int nWorstAgents = NUM_AGENTS * 0.3;
-  int nSelection = NUM_AGENTS * 0.1;
+  std::vector<brain_t> new_offsprings;
+  int n_worst_agents = NUM_AGENTS * 0.3;
+  int n_selection = NUM_AGENTS * 0.1;
 
-  for (int i = 0; i < nWorstAgents; i++) {
-    std::vector<brain_t> randomSelection;
+  for (int i = 0; i < n_worst_agents; i++) {
+    std::vector<brain_t> random_selection;
 
-    for (int j = 0; j < nSelection; j++) {
-      randomSelection.push_back(agents_[d3(rd3) % NUM_AGENTS]);
+    for (int j = 0; j < n_selection; j++) {
+      random_selection.push_back(agents_[d3(rd3) % NUM_AGENTS]);
     }
 
-    sort(randomSelection.begin(), randomSelection.end(), [](brain_t& b1, brain_t& b2) -> bool {
+    sort(random_selection.begin(), random_selection.end(), [](brain_t& b1, brain_t& b2) -> bool {
       return b1.get_score() < b2.get_score();
     });
 
-    brain_t newbrain_t = randomSelection[nSelection - 1].crossover(randomSelection[nSelection - 2]);
-    newOffsprings.push_back(newbrain_t);
+    brain_t new_brain_t = random_selection[n_selection - 1].crossover(random_selection[n_selection - 2]);
+    new_offsprings.push_back(new_brain_t);
   }
   sort(agents_.begin(), agents_.end(), [](brain_t& b1, brain_t& b2) -> bool {
     return b1.get_score() < b2.get_score();
@@ -54,8 +54,8 @@ void population_t::generate_new() {
   std::cout << "highest fitness: " << agents_.back().get_score() << '\n';
   std::cout << '\n' << "#############################################################" << '\n' << '\n' << '\n';
 
-  for (int i = 0; i < nWorstAgents; i++)
-    agents_[i] = newOffsprings[i];
+  for (int i = 0; i < n_worst_agents; i++)
+    agents_[i] = new_offsprings[i];
 }
 
 } // namespace ml

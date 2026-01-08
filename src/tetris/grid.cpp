@@ -18,8 +18,8 @@ bool contains(int n, std::vector<int> mat) {
 namespace tetris {
 
 grid_t::grid_t() {
-  gameOver = false;
-  clearedLines = 0.0;
+  game_over = false;
+  cleared_lines = 0.0;
   score = 0;
   for (int i = 0; i < 24; i++)
     matrix.push_back({0, 0, 0, 0, 0, 0, 0, 0, 0, 0});
@@ -34,7 +34,7 @@ void grid_t::clear_lines() {
       }
       matrix[0] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
       piece.set_position_row(piece.get_position()[0] + 1);
-      clearedLines++;
+      cleared_lines++;
       nLines++;
     }
   }
@@ -112,13 +112,13 @@ void grid_t::fix_piece() {
 
     if ((piece.get_shape() >> k) & 1) {
       if (a < 4)
-        gameOver = true;
+        game_over = true;
       else if (a < 24)
         matrix[a][b] = piece.get_n() + 2;
     }
   }
   if (a < 4)
-    gameOver = true;
+    game_over = true;
 }
 
 void grid_t::update() {

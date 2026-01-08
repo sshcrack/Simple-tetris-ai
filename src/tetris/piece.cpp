@@ -20,11 +20,11 @@ std::vector<int> removeElement(std::vector<int> v, int elem) {
 namespace tetris {
 
 piece_t::piece_t() {
-  pieceBag = {0, 1, 2, 3, 4, 5, 6};
-  int s1 = pieceBag[d1(rd1) % pieceBag.size()];
-  pieceBag = removeElement(pieceBag, s1);
-  int s2 = pieceBag[d1(rd1) % pieceBag.size()];
-  pieceBag = removeElement(pieceBag, s2);
+  piece_bag = {0, 1, 2, 3, 4, 5, 6};
+  int s1 = piece_bag[d1(rd1) % piece_bag.size()];
+  piece_bag = removeElement(piece_bag, s1);
+  int s2 = piece_bag[d1(rd1) % piece_bag.size()];
+  piece_bag = removeElement(piece_bag, s2);
   n = s1;
   next = s2;
   m = 0;
@@ -45,11 +45,11 @@ void piece_t::new_shape() {
 }
 
 void piece_t::new_next() {
-  int s = pieceBag[d1(rd1) % pieceBag.size()];
-  pieceBag = removeElement(pieceBag, s);
+  int s = piece_bag[d1(rd1) % piece_bag.size()];
+  piece_bag = removeElement(piece_bag, s);
   next = s;
-  if (pieceBag.size() == 0)
-    pieceBag = {0, 1, 2, 3, 4, 5, 6};
+  if (piece_bag.size() == 0)
+    piece_bag = {0, 1, 2, 3, 4, 5, 6};
 }
 
 } // namespace tetris

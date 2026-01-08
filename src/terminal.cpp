@@ -14,10 +14,10 @@ int main() {
   char* line = nullptr;
   size_t len = 0;
   int l = 1;
-  ml::neural_net_t bestParams = ml::load("data/bestParams.txt");
+  ml::neural_net_t best_params = ml::load("data/bestParams.txt");
   FILE* file = fopen("data/record.txt", "r");
   int record;
-  bool newRecord = false;
+  bool new_record = false;
 
   if (getline(&line, &len, file) != -1)
     record = atoi(line);
@@ -25,23 +25,23 @@ int main() {
   free(line);
 
   tetris::grid_t grid;
-  ml::brain_t brain(bestParams);
+  ml::brain_t brain(best_params);
   std::string bestM;
-  std::string bestMove = brain.best_move(grid);
-  int bestRotation = (int)bestMove.back() - 48;
-  bestMove.pop_back();
-  for (int i = 0; i < bestRotation; i++)
+  std::string best_move = brain.best_move(grid);
+  int best_rotation = (int)best_move.back() - 48;
+  best_move.pop_back();
+  for (int i = 0; i < best_rotation; i++)
     grid.rotate_piece();
 
   while (!grid.is_game_over()) {
 
-    if (bestMove.size() > 0) {
-      if (bestMove[0] == 'r') {
+    if (best_move.size() > 0) {
+      if (best_move[0] == 'r') {
         grid.move_piece(1, 9);
-        bestMove.pop_back();
+        best_move.pop_back();
       } else {
         grid.move_piece(-1, 0);
-        bestMove.pop_back();
+        best_move.pop_back();
       }
     }
 
@@ -52,24 +52,24 @@ int main() {
     if (grid.get_piece().is_fixed()) {
       grid.get_piece().new_shape();
       grid.get_piece().new_next();
-      bestMove = brain.best_move(grid);
-      bestRotation = (int)bestMove.back() - 48;
-      bestMove.pop_back();
-      bestM = bestMove;
-      for (int i = 0; i < bestRotation; i++)
+      best_move = brain.best_move(grid);
+      best_rotation = (int)best_move.back() - 48;
+      best_move.pop_back();
+      bestM = best_move;
+      for (int i = 0; i < best_rotation; i++)
         grid.rotate_piece();
     }
 
-    if (newRecord)
+    if (new_record)
       std::cout << "NEW RECORD" << '\n';
     std::cout << "cleared lines -> " << grid.get_cleared_lines() << '\n';
     std::cout << "record -> " << record << '\n' << '\n';
     if (bestM[0] == 'r')
-      std::cout << "best move -> " << bestM.size() << " time(s) right and " << bestRotation << " rotation(s)" << '\n';
+      std::cout << "best move -> " << bestM.size() << " time(s) right and " << best_rotation << " rotation(s)" << '\n';
     else if (bestM[0] == 'l')
-      std::cout << "best move -> " << bestM.size() << " time(s) left and " << bestRotation << " rotation(s)" << '\n';
+      std::cout << "best move -> " << bestM.size() << " time(s) left and " << best_rotation << " rotation(s)" << '\n';
     else
-      std::cout << "best move -> don't move and " << bestRotation << " rotation(s)" << '\n';
+      std::cout << "best move -> don't move and " << best_rotation << " rotation(s)" << '\n';
     std::cout << '\n';
     for (int j = 4; j < 24; j++) {
       for (int i = 0; i < 10; i++) {
@@ -84,7 +84,7 @@ int main() {
     std::cout << '\n' << '\n';
 
     if (grid.get_cleared_lines() > record) {
-      newRecord = true;
+      new_record = true;
       std::ofstream file("data/record.txt");
       if (file.is_open()) {
         record = grid.get_cleared_lines();

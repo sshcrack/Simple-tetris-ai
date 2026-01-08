@@ -30,11 +30,11 @@ public:
   }
 
 private:
-  std::vector<int> getColumnHeights(std::vector<std::vector<int>> grid) noexcept;
-  int getHoles(std::vector<std::vector<int>> grid) noexcept;
-  int getBumpiness(std::vector<std::vector<int>> grid) noexcept;
-  int getCompletedLines(std::vector<std::vector<int>> grid) noexcept;
-  int getAggregateHeight(std::vector<std::vector<int>> grid) noexcept;
+  std::vector<int> get_column_heights(std::vector<std::vector<int>> grid) noexcept;
+  int get_holes(std::vector<std::vector<int>> grid) noexcept;
+  int get_bumpiness(std::vector<std::vector<int>> grid) noexcept;
+  int get_completed_lines(std::vector<std::vector<int>> grid) noexcept;
+  int get_aggregate_height(std::vector<std::vector<int>> grid) noexcept;
 
   int score;
   neural_net_t params;

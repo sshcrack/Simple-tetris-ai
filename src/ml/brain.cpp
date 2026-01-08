@@ -22,65 +22,65 @@ brain_t::brain_t(neural_net_t params) {
 
 std::string brain_t::best_move(tetris::grid_t grid) noexcept {
   std::string bestMove, bestRotation;
-  float maxScore = -pow(10.0, 5);
-  int nRotations = tetris::SHAPE_ROTATIONS[grid.get_piece().get_n()];
-  tetris::grid_t startinggrid_t = grid;
-  std::vector<std::string> possibleMoves = {"llll", "lll", "ll", "l", "rrrrr", "rrrr", "rrr", "rr", "r", ""};
+  float max_score = -pow(10.0, 5);
+  int n_rotations = tetris::SHAPE_ROTATIONS[grid.get_piece().get_n()];
+  tetris::grid_t starting_grid_t = grid;
+  std::vector<std::string> possible_moves = {"llll", "lll", "ll", "l", "rrrrr", "rrrr", "rrr", "rr", "r", ""};
 
-  for (int r = 0; r < nRotations; r++) {
+  for (int r = 0; r < n_rotations; r++) {
     for (int m = 0; m < 10; m++) {
 
-      grid = startinggrid_t;
+      grid = starting_grid_t;
 
       for (int i = 0; i < r; i++)
         grid.rotate_piece();
 
-      if (possibleMoves[m][0] == 'l') {
-        for (int i = 0; i < possibleMoves[m].size(); i++)
+      if (possible_moves[m][0] == 'l') {
+        for (int i = 0; i < possible_moves[m].size(); i++)
           grid.move_piece(-1, 0);
-      } else if (possibleMoves[m][0] == 'r') {
-        for (int i = 0; i < possibleMoves[m].size(); i++)
+      } else if (possible_moves[m][0] == 'r') {
+        for (int i = 0; i < possible_moves[m].size(); i++)
           grid.move_piece(1, 9);
       }
 
       grid.gravity(3);
-      std::vector<int> heuristics = {getAggregateHeight(grid.get_matrix()),
-                                     getCompletedLines(grid.get_matrix()),
-                                     getHoles(grid.get_matrix()),
-                                     getBumpiness(grid.get_matrix())};
+      std::vector<int> heuristics = {get_aggregate_height(grid.get_matrix()),
+                                     get_completed_lines(grid.get_matrix()),
+                                     get_holes(grid.get_matrix()),
+                                     get_bumpiness(grid.get_matrix())};
 
       float score = forward(params, heuristics);
 
       grid.get_piece().new_shape();
 
-      int nRotationsNext = tetris::SHAPE_ROTATIONS[grid.get_piece().get_n()];
-      tetris::grid_t nextStartinggrid_t = grid;
+      int n_rotations_next = tetris::SHAPE_ROTATIONS[grid.get_piece().get_n()];
+      tetris::grid_t next_starting_grid_t = grid;
 
-      for (int rNext = 0; rNext < nRotationsNext; rNext++) {
+      for (int rNext = 0; rNext < n_rotations_next; rNext++) {
         for (int mNext = 0; mNext < 10; mNext++) {
 
-          grid = nextStartinggrid_t;
+          grid = next_starting_grid_t;
           for (int i = 0; i < rNext; i++)
             grid.rotate_piece();
 
-          if (possibleMoves[mNext][0] == 'l') {
-            for (int i = 0; i < possibleMoves[mNext].size(); i++)
+          if (possible_moves[mNext][0] == 'l') {
+            for (int i = 0; i < possible_moves[mNext].size(); i++)
               grid.move_piece(-1, 0);
-          } else if (possibleMoves[mNext][0] == 'r') {
-            for (int i = 0; i < possibleMoves[mNext].size(); i++)
+          } else if (possible_moves[mNext][0] == 'r') {
+            for (int i = 0; i < possible_moves[mNext].size(); i++)
               grid.move_piece(1, 9);
           }
 
-          std::vector<int> heuristics = {getAggregateHeight(grid.get_matrix()),
-                                         getCompletedLines(grid.get_matrix()),
-                                         getHoles(grid.get_matrix()),
-                                         getBumpiness(grid.get_matrix())};
+          std::vector<int> heuristics = {get_aggregate_height(grid.get_matrix()),
+                                         get_completed_lines(grid.get_matrix()),
+                                         get_holes(grid.get_matrix()),
+                                         get_bumpiness(grid.get_matrix())};
 
           float score2 = score + forward(params, heuristics);
 
-          if (score2 >= maxScore) {
-            maxScore = score2;
-            bestMove = possibleMoves[m];
+          if (score2 >= max_score) {
+            max_score = score2;
+            bestMove = possible_moves[m];
             bestRotation = std::to_string(r);
           }
         }
@@ -113,8 +113,8 @@ brain_t brain_t::crossover(brain_t partner) noexcept {
   return offspring;
 }
 
-std::vector<int> brain_t::getColumnHeights(std::vector<std::vector<int>> grid) noexcept {
-  std::vector<int> columnHeights;
+std::vector<int> brain_t::get_column_heights(std::vector<std::vector<int>> grid) noexcept {
+  std::vector<int> column_heights;
   for (int col = 0; col < 10; col++) {
     int height = 20;
     for (int row = 4; row < 24; row++) {
@@ -123,38 +123,38 @@ std::vector<int> brain_t::getColumnHeights(std::vector<std::vector<int>> grid) n
       else
         height--;
     }
-    columnHeights.push_back(height);
+    column_heights.push_back(height);
   }
-  return columnHeights;
+  return column_heights;
 }
 
-int brain_t::getCompletedLines(std::vector<std::vector<int>> grid) noexcept {
-  int completedLines = 0;
+int brain_t::get_completed_lines(std::vector<std::vector<int>> grid) noexcept {
+  int completed_lines = 0;
   for (int l = 0; l < 24; l++) {
     if (find(grid[l].begin(), grid[l].end(), 0) == grid[l].end()) {
-      completedLines++;
+      completed_lines++;
     }
   }
-  return completedLines;
+  return completed_lines;
 }
 
-int brain_t::getAggregateHeight(std::vector<std::vector<int>> grid) noexcept {
+int brain_t::get_aggregate_height(std::vector<std::vector<int>> grid) noexcept {
   int sum = 0;
-  std::vector<int> heights = getColumnHeights(grid);
+  std::vector<int> heights = get_column_heights(grid);
   for (int i = 0; i < 10; i++)
     sum += heights[i];
   return sum;
 }
 
-int brain_t::getBumpiness(std::vector<std::vector<int>> grid) noexcept {
-  std::vector<int> heights = getColumnHeights(grid);
+int brain_t::get_bumpiness(std::vector<std::vector<int>> grid) noexcept {
+  std::vector<int> heights = get_column_heights(grid);
   int bumpiness = 0;
   for (int i = 0; i < 9; i++)
     bumpiness += abs(heights[i] - heights[i + 1]);
   return bumpiness;
 }
 
-int brain_t::getHoles(std::vector<std::vector<int>> grid) noexcept {
+int brain_t::get_holes(std::vector<std::vector<int>> grid) noexcept {
   int holes = 0;
 
   for (int row = 23; row > 3; row--) {

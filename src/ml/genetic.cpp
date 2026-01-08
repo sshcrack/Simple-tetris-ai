@@ -48,18 +48,18 @@ brain_t genetic_t::run_games(brain_t brain) {
     tetris::grid_t grid;
     int pieces = 0;
     while (!grid.is_game_over() && pieces++ < 50000) {
-      std::string bestMove = brain.best_move(grid);
-      int bestRotation = (int)bestMove.back() - 48;
-      bestMove.pop_back();
+      std::string best_move = brain.best_move(grid);
+      int best_rotation = (int)best_move.back() - 48;
+      best_move.pop_back();
 
-      for (int i = 0; i < bestRotation; i++)
+      for (int i = 0; i < best_rotation; i++)
         grid.rotate_piece();
 
-      if (bestMove[0] == 'r') {
-        for (int m = 0; m < bestMove.size(); m++)
+      if (best_move[0] == 'r') {
+        for (int m = 0; m < best_move.size(); m++)
           grid.move_piece(1, 9);
       } else {
-        for (int m = 0; m < bestMove.size(); m++)
+        for (int m = 0; m < best_move.size(); m++)
           grid.move_piece(-1, 0);
       }
 

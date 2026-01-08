@@ -13,11 +13,11 @@ public:
   void new_next();
 
   [[nodiscard]] const std::vector<int>& get_piece_bag() const noexcept {
-    return pieceBag;
+    return piece_bag;
   }
 
   void set_piece_bag(const std::vector<int>& bag) noexcept {
-    pieceBag = bag;
+    piece_bag = bag;
   }
 
   [[nodiscard]] int get_n() const noexcept {
@@ -78,7 +78,7 @@ public:
   }
 
 private:
-  std::vector<int> pieceBag;
+  std::vector<int> piece_bag;
   int n, m, next;
   uint16_t shape;
   int position[2];

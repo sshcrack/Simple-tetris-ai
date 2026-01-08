@@ -24,19 +24,19 @@ public:
   }
 
   [[nodiscard]] bool is_game_over() const noexcept {
-    return gameOver;
+    return game_over;
   }
 
   void set_game_over(bool value) noexcept {
-    gameOver = value;
+    game_over = value;
   }
 
   [[nodiscard]] float get_cleared_lines() const noexcept {
-    return clearedLines;
+    return cleared_lines;
   }
 
   void set_cleared_lines(float value) noexcept {
-    clearedLines = value;
+    cleared_lines = value;
   }
 
   [[nodiscard]] const std::vector<std::vector<int>>& get_matrix() const noexcept {
@@ -57,8 +57,8 @@ public:
 
 private:
   piece_t piece;
-  bool gameOver;
-  float clearedLines;
+  bool game_over;
+  float cleared_lines;
   std::vector<std::vector<int>> matrix;
   int score;
 };
