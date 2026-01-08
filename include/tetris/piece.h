@@ -12,32 +12,78 @@ public:
   void new_shape();
   void new_next();
 
-  [[nodiscard]] const std::vector<int>& get_piece_bag() const noexcept;
-  void set_piece_bag(const std::vector<int>& bag) noexcept;
+  [[nodiscard]] const std::vector<int>& get_piece_bag() const noexcept {
+    return pieceBag;
+  }
 
-  [[nodiscard]] int get_n() const noexcept;
-  void set_n(int value) noexcept;
+  void set_piece_bag(const std::vector<int>& bag) noexcept {
+    pieceBag = bag;
+  }
 
-  [[nodiscard]] int get_m() const noexcept;
-  void set_m(int value) noexcept;
+  [[nodiscard]] int get_n() const noexcept {
+    return n;
+  }
 
-  [[nodiscard]] int get_next() const noexcept;
-  void set_next(int value) noexcept;
+  void set_n(int value) noexcept {
+    n = value;
+  }
 
-  [[nodiscard]] const std::string& get_shape() const noexcept;
-  void set_shape(const std::string& value) noexcept;
+  [[nodiscard]] int get_m() const noexcept {
+    return m;
+  }
 
-  [[nodiscard]] const int* get_position() const noexcept;
-  void set_position(int row, int col) noexcept;
-  void set_position_row(int row) noexcept;
-  void set_position_col(int col) noexcept;
+  void set_m(int value) noexcept {
+    m = value;
+  }
 
-  [[nodiscard]] bool is_fixed() const noexcept;
-  void set_fixed(bool value) noexcept;
+  [[nodiscard]] int get_next() const noexcept {
+    return next;
+  }
 
-  [[nodiscard]] const std::vector<std::vector<std::string>>& get_shape_list() const noexcept;
+  void set_next(int value) noexcept {
+    next = value;
+  }
 
-  [[nodiscard]] const std::vector<int>& get_shape_rotations() const noexcept;
+  [[nodiscard]] const std::string& get_shape() const noexcept {
+    return shape;
+  }
+
+  void set_shape(const std::string& value) noexcept {
+    shape = value;
+  }
+
+  [[nodiscard]] const int* get_position() const noexcept {
+    return position;
+  }
+
+  void set_position(int row, int col) noexcept {
+    position[0] = row;
+    position[1] = col;
+  }
+
+  void set_position_row(int row) noexcept {
+    position[0] = row;
+  }
+
+  void set_position_col(int col) noexcept {
+    position[1] = col;
+  }
+
+  [[nodiscard]] bool is_fixed() const noexcept {
+    return fixed;
+  }
+
+  void set_fixed(bool value) noexcept {
+    fixed = value;
+  }
+
+  [[nodiscard]] const std::vector<std::vector<std::string>>& get_shape_list() const noexcept {
+    return shapeList;
+  }
+
+  [[nodiscard]] const std::vector<int>& get_shape_rotations() const noexcept {
+    return shapeRotations;
+  }
 
 private:
   std::vector<int> pieceBag;

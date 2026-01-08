@@ -24,46 +24,6 @@ grid_t::grid_t() {
     matrix.push_back({0, 0, 0, 0, 0, 0, 0, 0, 0, 0});
 }
 
-piece_t& grid_t::get_piece() noexcept {
-  return piece;
-}
-
-const piece_t& grid_t::get_piece() const noexcept {
-  return piece;
-}
-
-bool grid_t::is_game_over() const noexcept {
-  return gameOver;
-}
-
-void grid_t::set_game_over(bool value) noexcept {
-  gameOver = value;
-}
-
-float grid_t::get_cleared_lines() const noexcept {
-  return clearedLines;
-}
-
-void grid_t::set_cleared_lines(float value) noexcept {
-  clearedLines = value;
-}
-
-const std::vector<std::vector<int>>& grid_t::get_matrix() const noexcept {
-  return matrix;
-}
-
-std::vector<std::vector<int>>& grid_t::get_matrix() noexcept {
-  return matrix;
-}
-
-int grid_t::get_score() const noexcept {
-  return score;
-}
-
-void grid_t::set_score(int value) noexcept {
-  score = value;
-}
-
 void grid_t::clear_lines() {
   int nLines = 0;
   for (int j = 4; j < 24; j++) {

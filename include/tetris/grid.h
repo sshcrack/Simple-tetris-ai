@@ -15,20 +15,45 @@ public:
   void gravity(int val);
   void move_piece(int dir, int ind);
 
-  [[nodiscard]] piece_t& get_piece() noexcept;
-  [[nodiscard]] const piece_t& get_piece() const noexcept;
+  [[nodiscard]] piece_t& get_piece() noexcept {
+    return piece;
+  }
 
-  [[nodiscard]] bool is_game_over() const noexcept;
-  void set_game_over(bool value) noexcept;
+  [[nodiscard]] const piece_t& get_piece() const noexcept {
+    return piece;
+  }
 
-  [[nodiscard]] float get_cleared_lines() const noexcept;
-  void set_cleared_lines(float value) noexcept;
+  [[nodiscard]] bool is_game_over() const noexcept {
+    return gameOver;
+  }
 
-  [[nodiscard]] const std::vector<std::vector<int>>& get_matrix() const noexcept;
-  [[nodiscard]] std::vector<std::vector<int>>& get_matrix() noexcept;
+  void set_game_over(bool value) noexcept {
+    gameOver = value;
+  }
 
-  [[nodiscard]] int get_score() const noexcept;
-  void set_score(int value) noexcept;
+  [[nodiscard]] float get_cleared_lines() const noexcept {
+    return clearedLines;
+  }
+
+  void set_cleared_lines(float value) noexcept {
+    clearedLines = value;
+  }
+
+  [[nodiscard]] const std::vector<std::vector<int>>& get_matrix() const noexcept {
+    return matrix;
+  }
+
+  [[nodiscard]] std::vector<std::vector<int>>& get_matrix() noexcept {
+    return matrix;
+  }
+
+  [[nodiscard]] int get_score() const noexcept {
+    return score;
+  }
+
+  void set_score(int value) noexcept {
+    score = value;
+  }
 
 private:
   piece_t piece;
