@@ -4,19 +4,13 @@ project(
   version: '1.0.0',
   default_options: [
     'cpp_std=gnu++2a',
-    'warning_level=3',
+    'warning_level=2',
     'buildtype=release',
+    'optimization=3'
   ],
 )
 
 include_dirs = include_directories('.')
-
-buildtype = get_option('buildtype')
-if buildtype == 'release'
-  add_global_arguments('-O3', '-DNDEBUG', language: 'cpp')
-elif buildtype == 'debug'
-  add_global_arguments('-O0', '-g', '-DDEBUG', language: 'cpp')
-endif
 
 tetris_sources = [
   'src/tetris/grid.cpp',
