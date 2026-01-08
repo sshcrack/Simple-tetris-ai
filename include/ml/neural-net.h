@@ -5,7 +5,6 @@
 namespace ml {
 
 struct neural_net_t {
-public:
   float bias2;
   std::vector<float> layer2;
   std::vector<float> biases1;
