@@ -11,7 +11,7 @@
 
 int main() {
 
-  char* line;
+  char* line = nullptr;
   size_t len = 0;
   int l = 1;
   ml::neural_net_t bestParams = ml::load("data/bestParams.txt");
@@ -22,6 +22,7 @@ int main() {
   if (getline(&line, &len, file) != -1)
     record = atoi(line);
   fclose(file);
+  free(line);
 
   tetris::grid_t grid;
   ml::brain_t brain(bestParams);

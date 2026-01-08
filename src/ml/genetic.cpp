@@ -10,7 +10,7 @@ namespace ml {
 genetic_t::genetic_t() {
   gen_ = 1;
   int l = 0;
-  char* line;
+  char* line = nullptr;
   size_t len = 0;
   FILE* file1 = fopen("data/bestParams.txt", "r");
   while (getline(&line, &len, file1) != -1) {
@@ -18,6 +18,7 @@ genetic_t::genetic_t() {
       best_recorded_fitnes_ = atoi(line);
   }
   fclose(file1);
+  free(line);
 }
 
 void genetic_t::fit() {

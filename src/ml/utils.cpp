@@ -67,7 +67,7 @@ void save(const neural_net_t& net, const std::string& filename, int score) noexc
 neural_net_t load(const std::string& filename) noexcept {
   neural_net_t net;
   int i, j;
-  char* line;
+  char* line = nullptr;
   size_t len = 0;
   FILE* file = fopen(filename.c_str(), "r");
 
@@ -89,6 +89,7 @@ neural_net_t load(const std::string& filename) noexcept {
   net.bias2 = (float)strtod(line, NULL);
 
   fclose(file);
+  free(line);
 
   return net;
 }
