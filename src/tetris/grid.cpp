@@ -20,6 +20,7 @@ namespace tetris {
 grid_t::grid_t() {
   game_over = false;
   cleared_lines = 0.0;
+  tetrises = 0;
   score = 0;
   for (int i = 0; i < 24; i++) {
     matrix.push_back({0, 0, 0, 0, 0, 0, 0, 0, 0, 0});
@@ -46,7 +47,8 @@ void grid_t::clear_lines() {
   } else if (nLines == 3) {
     score += 5;
   } else if (nLines == 4) {
-    score += 8;
+    score += 20;
+    tetrises++;
   }
 }
 

@@ -3,8 +3,7 @@
 
 namespace {
 
-std::random_device rd1;
-std::uniform_int_distribution<int> d1(0, 7);
+thread_local std::mt19937 rng(std::random_device{}());
 
 std::vector<int> removeElement(std::vector<int> v, int elem) {
   int it = 0;
@@ -18,13 +17,22 @@ std::vector<int> removeElement(std::vector<int> v, int elem) {
 
 } // namespace
 
+namespace {
+
+int random_bag_index(size_t bag_size) {
+  std::uniform_int_distribution<int> dist(0, static_cast<int>(bag_size) - 1);
+  return dist(rng);
+}
+
+} // namespace
+
 namespace tetris {
 
 piece_t::piece_t() {
   piece_bag = {0, 1, 2, 3, 4, 5, 6};
-  int s1 = piece_bag[d1(rd1) % piece_bag.size()];
+  int s1 = piece_bag[random_bag_index(piece_bag.size())];
   piece_bag = removeElement(piece_bag, s1);
-  int s2 = piece_bag[d1(rd1) % piece_bag.size()];
+  int s2 = piece_bag[random_bag_index(piece_bag.size())];
   piece_bag = removeElement(piece_bag, s2);
   n = s1;
   next = s2;
@@ -46,7 +54,7 @@ void piece_t::new_shape() {
 }
 
 void piece_t::new_next() {
-  int s = piece_bag[d1(rd1) % piece_bag.size()];
+  int s = piece_bag[random_bag_index(piece_bag.size())];
   piece_bag = removeElement(piece_bag, s);
   next = s;
   if (piece_bag.size() == 0)

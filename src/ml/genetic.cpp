@@ -1,14 +1,21 @@
 #include "include/ml/genetic.h"
 
+#include "include/ml/neural-net.h"
+
 #include <iostream>
 #include <string>
 #include <thread>
 #include <vector>
 #include <mutex>
-#include <future>
 #include <algorithm>
+#include <atomic>
 
 #define N_GAMES 3
+#define MAX_PIECES 5000
+// Extra fitness reward per tetris (4-line clear). This must be much larger than
+// the raw game-score benefit (20 pts) so the GA strongly selects tetris-heavy agents
+// instead of pure survival strategies.
+#define TETRIS_FITNESS_BONUS 500
 
 static std::mutex cout_mutex;
 
@@ -21,7 +28,7 @@ genetic_t::genetic_t() {
   size_t len = 0;
   FILE* file1 = fopen("data/bestParams.txt", "r");
   while (getline(&line, &len, file1) != -1) {
-    if (l++ == 4 * 3 + 3 + 3 + 1) {
+    if (l++ == NET_INPUTS * NET_HIDDEN + NET_HIDDEN + NET_HIDDEN + 1) {
       best_recorded_fitnes_ = static_cast<int>(strtol(line, nullptr, 10));
     }
   }
@@ -30,36 +37,43 @@ genetic_t::genetic_t() {
 }
 
 void genetic_t::fit() {
-  const unsigned num_threads = std::thread::hardware_concurrency();
-  std::cout << "Using " << num_threads << " threads for training" << std::endl;
+  const unsigned hw_threads = std::max(1U, std::thread::hardware_concurrency());
+  const size_t worker_count = std::min(static_cast<size_t>(hw_threads), population_.agents_count());
+  std::cout << "Using " << worker_count << " worker threads for training" << std::endl;
 
   while (true) {
-    float best_fitnes = population_.get_agents()[0].get_score();
+    std::vector<brain_t> evaluated(population_.agents_count());
+    std::atomic<size_t> next_agent {0};
+    std::atomic<size_t> completed {0};
+    const size_t progress_step = std::max<size_t>(1, population_.agents_count() / 10);
 
-    std::vector<std::future<std::pair<size_t, brain_t>>> futures;
+    std::vector<std::thread> workers;
+    workers.reserve(worker_count);
+    for (size_t t = 0; t < worker_count; t++) {
+      workers.emplace_back([this, &evaluated, &next_agent, &completed, progress_step]() {
+        while (true) {
+          const size_t agent_idx = next_agent.fetch_add(1);
+          if (agent_idx >= population_.agents_count()) {
+            break;
+          }
 
-    for (size_t b = 0; b < population_.agents_count(); b++) {
-      futures.push_back(std::async(std::launch::async, [this, b, best_fitnes]() {
-        {
-          std::lock_guard<std::mutex> lock(cout_mutex);
-          std::cout << "gen " << gen_ << "   agent " << (b + 1) << "/" << population_.agents_count() << '\n';
-        }
-        brain_t result = run_games(population_.get_agents()[b]);
-        {
-          std::lock_guard<std::mutex> lock(cout_mutex);
-          std::cout << "current -> " << result.get_score() << "  best -> " << best_fitnes << '\n';
-        }
-        return std::make_pair(b, result);
-      }));
+          evaluated[agent_idx] = run_games(population_.get_agents()[agent_idx]);
 
-      if (futures.size() >= num_threads || b == population_.agents_count() - 1) {
-        for (auto& f : futures) {
-          auto [agent_idx, result] = f.get();
-          population_.get_agents()[agent_idx] = result;
+          const size_t done = completed.fetch_add(1) + 1;
+          if (done % progress_step == 0 || done == population_.agents_count()) {
+            std::lock_guard<std::mutex> lock(cout_mutex);
+            std::cout << "gen " << gen_ << " progress " << done << "/" << population_.agents_count()
+                      << "  current -> " << evaluated[agent_idx].get_score() << "  best -> " << best_recorded_fitnes_ << '\n';
+          }
         }
-        futures.clear();
-      }
+      });
     }
+
+    for (auto& worker : workers) {
+      worker.join();
+    }
+
+    population_.get_agents() = std::move(evaluated);
 
     auto best_agent = std::max_element(population_.get_agents().begin(), population_.get_agents().end(),
       [](const brain_t& b1, const brain_t& b2) { return b1.get_score() < b2.get_score(); });
@@ -80,7 +94,7 @@ brain_t genetic_t::run_games(brain_t brain_param) {
   for (int g = 0; g < N_GAMES; g++) {
     tetris::grid_t grid;
     int pieces = 0;
-    while (!grid.is_game_over() && pieces++ < 50000) {
+    while (!grid.is_game_over() && pieces++ < MAX_PIECES) {
       std::string best_move = brain_param.best_move(grid);
       int best_rotation = static_cast<int>(best_move.back()) - 48;
       best_move.pop_back();
@@ -108,11 +122,7 @@ brain_t genetic_t::run_games(brain_t brain_param) {
       grid.get_piece().new_shape();
       grid.get_piece().new_next();
     }
-    {
-      std::lock_guard<std::mutex> lock(cout_mutex);
-      std::cout << "game " << g + 1 << " ->  score: " << grid.get_score() << "  lines: " << grid.get_cleared_lines() << '\n';
-    }
-    fitness += grid.get_score();
+    fitness += grid.get_score() + grid.get_tetrises() * TETRIS_FITNESS_BONUS;
   }
 
   brain_param.set_score(fitness / N_GAMES);
