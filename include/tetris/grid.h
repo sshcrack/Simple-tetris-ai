@@ -39,6 +39,14 @@ public:
     cleared_lines = value;
   }
 
+  [[nodiscard]] int get_tetrises() const noexcept {
+    return tetrises;
+  }
+
+  void set_tetrises(int value) noexcept {
+    tetrises = value;
+  }
+
   [[nodiscard]] const std::vector<std::vector<int>>& get_matrix() const noexcept {
     return matrix;
   }
@@ -59,6 +67,7 @@ private:
   piece_t piece;
   bool game_over;
   float cleared_lines;
+  int tetrises;
   std::vector<std::vector<int>> matrix;
   int score;
 };

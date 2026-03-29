@@ -41,3 +41,12 @@ tetris = executable(
   ),
   include_directories: include_dirs,
 )
+bench = executable(
+  'bench',
+  files(
+    ml_sources,
+    tetris_sources,
+    'src/benchmark.cpp',
+  ),
+  include_directories: include_dirs,
+)

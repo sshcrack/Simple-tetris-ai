@@ -1,5 +1,7 @@
 #include "include/ml/genetic.h"
 
+#include "include/ml/neural-net.h"
+
 #include <iostream>
 #include <string>
 #include <thread>
@@ -9,6 +11,7 @@
 #include <algorithm>
 
 #define N_GAMES 3
+#define MAX_PIECES 20000
 
 static std::mutex cout_mutex;
 
@@ -21,7 +24,7 @@ genetic_t::genetic_t() {
   size_t len = 0;
   FILE* file1 = fopen("data/bestParams.txt", "r");
   while (getline(&line, &len, file1) != -1) {
-    if (l++ == 4 * 3 + 3 + 3 + 1) {
+    if (l++ == NET_INPUTS * NET_HIDDEN + NET_HIDDEN + NET_HIDDEN + 1) {
       best_recorded_fitnes_ = static_cast<int>(strtol(line, nullptr, 10));
     }
   }
@@ -80,7 +83,7 @@ brain_t genetic_t::run_games(brain_t brain_param) {
   for (int g = 0; g < N_GAMES; g++) {
     tetris::grid_t grid;
     int pieces = 0;
-    while (!grid.is_game_over() && pieces++ < 50000) {
+    while (!grid.is_game_over() && pieces++ < MAX_PIECES) {
       std::string best_move = brain_param.best_move(grid);
       int best_rotation = static_cast<int>(best_move.back()) - 48;
       best_move.pop_back();
@@ -110,7 +113,7 @@ brain_t genetic_t::run_games(brain_t brain_param) {
     }
     {
       std::lock_guard<std::mutex> lock(cout_mutex);
-      std::cout << "game " << g + 1 << " ->  score: " << grid.get_score() << "  lines: " << grid.get_cleared_lines() << '\n';
+      std::cout << "game " << g + 1 << " ->  score: " << grid.get_score() << "  lines: " << grid.get_cleared_lines() << "  tetrises: " << grid.get_tetrises() << '\n';
     }
     fitness += grid.get_score();
   }

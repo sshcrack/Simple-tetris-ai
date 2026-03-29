@@ -51,7 +51,8 @@ std::string brain_t::best_move(const tetris::grid_t& grid) noexcept {
       const std::vector<int> heuristics = {get_aggregate_height(grid.get_matrix()),
                                      get_completed_lines(grid.get_matrix()),
                                      get_holes(grid.get_matrix()),
-                                     get_bumpiness(grid.get_matrix())};
+                                     get_bumpiness(grid.get_matrix()),
+                                     get_wells(grid.get_matrix())};
 
       float score = forward(params, heuristics);
 
@@ -81,7 +82,8 @@ std::string brain_t::best_move(const tetris::grid_t& grid) noexcept {
           std::vector<int> heuristics = {get_aggregate_height(grid.get_matrix()),
                                          get_completed_lines(grid.get_matrix()),
                                          get_holes(grid.get_matrix()),
-                                         get_bumpiness(grid.get_matrix())};
+                                         get_bumpiness(grid.get_matrix()),
+                                         get_wells(grid.get_matrix())};
 
           const float score2 = score + forward(params, heuristics);
 
@@ -104,14 +106,14 @@ brain_t brain_t::crossover(brain_t partner_param) noexcept {
   float f1 = this->score;
   float f2 = partner_param.score;
 
-  for (int i = 0; i < 3; i++) {
-    for (int j = 0; j < 4; j++) {
+  for (int i = 0; i < NET_HIDDEN; i++) {
+    for (int j = 0; j < NET_INPUTS; j++) {
       offspring.params.layer1[i][j] = (f1 * p1.layer1[i][j] + f2 * p2.layer1[i][j]) / (f1 + f2 + pow(10, -10));
     }
     offspring.params.biases1[i] = (f1 * p1.biases1[i] + f2 * p2.biases1[i]) / (f1 + f2 + pow(10, -10));
   }
 
-  for (int i = 0; i < 3; i++) {
+  for (int i = 0; i < NET_HIDDEN; i++) {
     offspring.params.layer2[i] = (f1 * p1.layer2[i] + f2 * p2.layer2[i]) / (f1 + f2 + pow(10, -10));
   }
   offspring.params.bias2 = (f1 * p1.bias2 + f2 * p2.bias2) / (f1 + f2 + pow(10, -10));
@@ -188,6 +190,15 @@ int brain_t::get_holes(const std::vector<std::vector<int>>& grid) noexcept {
     }
   }
   return holes;
+}
+
+int brain_t::get_wells(const std::vector<std::vector<int>>& grid) noexcept {
+  std::vector<int> heights = get_column_heights(grid);
+  // Only measure edge wells (best for tetris strategy: keep one side column low
+  // for I-piece drops). The board edge acts as a wall at height 20.
+  const int left_well = std::max(0, heights[1] - heights[0]);
+  const int right_well = std::max(0, heights[8] - heights[9]);
+  return std::max(left_well, right_well);
 }
 
 } // namespace ml

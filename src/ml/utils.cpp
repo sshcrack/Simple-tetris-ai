@@ -29,10 +29,10 @@ float forward(const neural_net_t& net, const std::vector<int>& inputs) noexcept 
   float tmp = 0.0;
   float out = 0.0;
 
-  for (int i = 0; i < 3; i++) {
+  for (int i = 0; i < NET_HIDDEN; i++) {
     tmp = 0.0;
 
-    for (int j = 0; j < 4; j++) {
+    for (int j = 0; j < NET_INPUTS; j++) {
       tmp += inputs[j] * net.layer1[i][j];
     }
 
@@ -49,13 +49,13 @@ void save(const neural_net_t& net, const std::string& filename, int score) noexc
   std::ofstream fileAdd;
   fileAdd.open(filename, std::ios_base::app);
 
-  for (int i = 0; i < 3; i++) {
-    for (int j = 0; j < 4; j++) {
+  for (int i = 0; i < NET_HIDDEN; i++) {
+    for (int j = 0; j < NET_INPUTS; j++) {
       fileAdd << net.layer1[i][j] << '\n';
     }
     fileAdd << net.biases1[i] << '\n';
   }
-  for (int i = 0; i < 3; i++) {
+  for (int i = 0; i < NET_HIDDEN; i++) {
     fileAdd << net.layer2[i] << '\n';
   }
   fileAdd << net.bias2 << '\n';
@@ -70,9 +70,9 @@ neural_net_t load(const std::string& filename) noexcept {
   size_t len = 0;
   FILE* file = fopen(filename.c_str(), "r");
 
-  for (int i = 0; i < 3; i++) {
+  for (int i = 0; i < NET_HIDDEN; i++) {
     std::vector<float> tmp;
-    for (int j = 0; j < 4; j++) {
+    for (int j = 0; j < NET_INPUTS; j++) {
       getline(&line, &len, file);
       tmp.push_back(static_cast<float>(strtod(line, nullptr)));
     }
@@ -80,7 +80,7 @@ neural_net_t load(const std::string& filename) noexcept {
     getline(&line, &len, file);
     net.biases1.push_back(static_cast<float>(strtod(line, nullptr)));
   }
-  for (int i = 0; i < 3; i++) {
+  for (int i = 0; i < NET_HIDDEN; i++) {
     getline(&line, &len, file);
     net.layer2.push_back(static_cast<float>(strtod(line, nullptr)));
   }
@@ -96,16 +96,16 @@ neural_net_t load(const std::string& filename) noexcept {
 neural_net_t generate_net() noexcept {
   neural_net_t net;
 
-  for (int i = 0; i < 3; i++) {
+  for (int i = 0; i < NET_HIDDEN; i++) {
     std::vector<float> tmp;
-    for (int j = 0; j < 4; j++) {
+    for (int j = 0; j < NET_INPUTS; j++) {
       tmp.push_back(get_random_param());
     }
     net.layer1.push_back(tmp);
     net.biases1.push_back(get_random_param());
   }
 
-  for (int i = 0; i < 3; i++) {
+  for (int i = 0; i < NET_HIDDEN; i++) {
     net.layer2.push_back(get_random_param());
   }
   net.bias2 = get_random_param();

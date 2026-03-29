@@ -35,6 +35,7 @@ private:
   int get_bumpiness(const std::vector<std::vector<int>>& grid) noexcept;
   int get_completed_lines(const std::vector<std::vector<int>>& grid) noexcept;
   int get_aggregate_height(const std::vector<std::vector<int>>& grid) noexcept;
+  int get_wells(const std::vector<std::vector<int>>& grid) noexcept;
 
   int score;
   neural_net_t params;

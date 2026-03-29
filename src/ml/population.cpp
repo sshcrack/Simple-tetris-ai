@@ -4,7 +4,7 @@
 #include <algorithm>
 #include <iostream>
 
-#define NUM_AGENTS 300
+#define NUM_AGENTS 100
 
 namespace {
 
