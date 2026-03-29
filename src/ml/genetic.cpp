@@ -11,7 +11,11 @@
 #include <atomic>
 
 #define N_GAMES 3
-#define MAX_PIECES 20000
+#define MAX_PIECES 5000
+// Extra fitness reward per tetris (4-line clear). This must be much larger than
+// the raw game-score benefit (20 pts) so the GA strongly selects tetris-heavy agents
+// instead of pure survival strategies.
+#define TETRIS_FITNESS_BONUS 500
 
 static std::mutex cout_mutex;
 
@@ -38,7 +42,6 @@ void genetic_t::fit() {
   std::cout << "Using " << worker_count << " worker threads for training" << std::endl;
 
   while (true) {
-    float best_fitnes = population_.get_agents()[0].get_score();
     std::vector<brain_t> evaluated(population_.agents_count());
     std::atomic<size_t> next_agent {0};
     std::atomic<size_t> completed {0};
@@ -47,7 +50,7 @@ void genetic_t::fit() {
     std::vector<std::thread> workers;
     workers.reserve(worker_count);
     for (size_t t = 0; t < worker_count; t++) {
-      workers.emplace_back([this, &evaluated, &next_agent, &completed, progress_step, best_fitnes]() {
+      workers.emplace_back([this, &evaluated, &next_agent, &completed, progress_step]() {
         while (true) {
           const size_t agent_idx = next_agent.fetch_add(1);
           if (agent_idx >= population_.agents_count()) {
@@ -60,7 +63,7 @@ void genetic_t::fit() {
           if (done % progress_step == 0 || done == population_.agents_count()) {
             std::lock_guard<std::mutex> lock(cout_mutex);
             std::cout << "gen " << gen_ << " progress " << done << "/" << population_.agents_count()
-                      << "  current -> " << evaluated[agent_idx].get_score() << "  best -> " << best_fitnes << '\n';
+                      << "  current -> " << evaluated[agent_idx].get_score() << "  best -> " << best_recorded_fitnes_ << '\n';
           }
         }
       });
@@ -119,7 +122,7 @@ brain_t genetic_t::run_games(brain_t brain_param) {
       grid.get_piece().new_shape();
       grid.get_piece().new_next();
     }
-    fitness += grid.get_score();
+    fitness += grid.get_score() + grid.get_tetrises() * TETRIS_FITNESS_BONUS;
   }
 
   brain_param.set_score(fitness / N_GAMES);
