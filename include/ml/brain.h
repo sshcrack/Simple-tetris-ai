@@ -29,6 +29,10 @@ public:
     return score;
   }
 
+  [[nodiscard]] const neural_net_t& get_params() const noexcept {
+    return params;
+  }
+
 private:
   std::vector<int> get_column_heights(const std::vector<std::vector<int>>& grid) noexcept;
   int get_holes(const std::vector<std::vector<int>>& grid) noexcept;

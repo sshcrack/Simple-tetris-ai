@@ -17,4 +17,6 @@ neural_net_t load(const std::string& filename) noexcept;
 
 neural_net_t generate_net() noexcept;
 
+neural_net_t mutate(const neural_net_t& net, float mutation_rate, float mutation_sigma) noexcept;
+
 } // namespace ml

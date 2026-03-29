@@ -113,4 +113,33 @@ neural_net_t generate_net() noexcept {
   return net;
 }
 
+neural_net_t mutate(const neural_net_t& net, float mutation_rate, float mutation_sigma) noexcept {
+  static std::mt19937 rng_mt(std::random_device{}());
+  std::normal_distribution<float> gauss(0.0f, mutation_sigma);
+  std::uniform_real_distribution<float> uniform(0.0f, 1.0f);
+
+  neural_net_t mutated = net;
+
+  for (int i = 0; i < NET_HIDDEN; i++) {
+    for (int j = 0; j < NET_INPUTS; j++) {
+      if (uniform(rng_mt) < mutation_rate) {
+        mutated.layer1[i][j] += gauss(rng_mt);
+      }
+    }
+    if (uniform(rng_mt) < mutation_rate) {
+      mutated.biases1[i] += gauss(rng_mt);
+    }
+  }
+  for (int i = 0; i < NET_HIDDEN; i++) {
+    if (uniform(rng_mt) < mutation_rate) {
+      mutated.layer2[i] += gauss(rng_mt);
+    }
+  }
+  if (uniform(rng_mt) < mutation_rate) {
+    mutated.bias2 += gauss(rng_mt);
+  }
+
+  return mutated;
+}
+
 } // namespace ml

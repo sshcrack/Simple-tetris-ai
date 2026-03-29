@@ -17,7 +17,16 @@ namespace ml {
 
 population_t::population_t() {
   agents_.reserve(NUM_AGENTS);
-  for (int a = 0; a < NUM_AGENTS; a++) {
+
+  // Seed the first 30% of agents from bestParams.txt with perturbation
+  // so the population starts near a known-good region of the search space.
+  neural_net_t seed = ml::load("data/bestParams.txt");
+  const int n_seeded = static_cast<int>(NUM_AGENTS * 0.3);
+  for (int a = 0; a < n_seeded; a++) {
+    agents_.emplace_back(mutate(seed, 0.5f, 0.2f));
+  }
+  // Remaining agents are random for diversity
+  for (int a = n_seeded; a < NUM_AGENTS; a++) {
     agents_.emplace_back(generate_net());
   }
 }
@@ -39,6 +48,8 @@ void population_t::generate_new() {
     });
 
     brain_t new_brain = random_selection[n_selection - 1].crossover(random_selection[n_selection - 2]);
+    // Mutate the offspring to explore new parameter regions (30% chance per weight, sigma=0.15)
+    new_brain = brain_t(mutate(new_brain.get_params(), 0.3f, 0.15f));
     new_offsprings.push_back(new_brain);
   }
   sort(agents_.begin(), agents_.end(), [](brain_t& b1, brain_t& b2) -> bool {
